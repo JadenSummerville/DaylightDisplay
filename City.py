@@ -31,8 +31,8 @@ class City:
         return self.sunHoursList
     def display(self, index):
         axs[index].bar(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], self.getSunMonths())
-        axs[index].set_title(self.getCityName())
-        axs[index].set_ylabel('latitude\n' + self.getLatitude(), rotation=0, labelpad=30)
+        axs[index].set_title(self.getCityName() + ' (' + str(round(float(self.getLatitude()))) + ' degrees N latitude)')
+        axs[index].set_ylabel('Mean daylight\nhours per day', rotation=0, labelpad=50)
         axs[index].set_ylim(0, 12)
 
         print(self.cityName, self.longitude, self.latitude)
@@ -66,6 +66,7 @@ for i in range(len(cityList)):
 
 # Display the graph
 #plt.tight_layout()
+plt.suptitle('Does High Latitude Extend Summer Daylight Hours And Decrease Winter Daylight Hours?', fontsize=20)
 plt.subplots_adjust(hspace=1)
 plt.show()
 print("Test")

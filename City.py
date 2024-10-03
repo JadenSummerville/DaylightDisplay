@@ -30,14 +30,34 @@ class City:
     def getSunMonths(self):
         return self.sunHoursList
     def display(self, index):
-        axs[index].bar(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], self.getSunMonths())
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        # Define two alternating colors for month labels
+        month_colors = ["#1f77b4", "#d62728"]  # Dark blue and dark red
+
+        axs[index].bar(months, self.getSunMonths(), color="skyblue")  # Keep bar colors uniform
         axs[index].set_title(self.getCityName() + ' (' + str(round(float(self.getLatitude()))) + ' degrees N latitude)')
-        axs[index].set_ylabel('Mean daylight\nhours per day', rotation=0, labelpad=50)
+        
+        if index % 3 == 0:  # Only show ylabel for the leftmost plots
+            axs[index].set_ylabel('Mean daylight\nhours per day', rotation=0, labelpad=50)
+        else:
+            axs[index].set_ylabel('')  # No label for other subplots
+
         axs[index].set_ylim(0, 12)
 
-        print(self.cityName, self.longitude, self.latitude)
-        for i in range(12):
-            print(i, ":", self.sunHoursList[i])
+        # Rotate month labels and color them in alternating colors
+        axs[index].set_xticklabels(months, rotation=45, ha="right", color="black")
+        
+        # Apply alternating colors to the tick labels (month names)
+        for i, tick_label in enumerate(axs[index].get_xticklabels()):
+            tick_label.set_color(month_colors[i % 2])
+        #axs[index].bar(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], self.getSunMonths())
+        #axs[index].set_title(self.getCityName() + ' (' + str(round(float(self.getLatitude()))) + ' degrees N latitude)')
+    
+        #if index % 3 == 0:  # Only show ylabel for the leftmost plots
+        #    axs[index].set_ylabel('Mean daylight\nhours per day', rotation=0, labelpad=50)
+        #else:
+        #    axs[index].set_ylabel('')  # No label for other subplots
+        #axs[index].set_ylim(0, 12)
 def getCities(fileName, cities):
     with open(fileName, mode='r') as file:
         # Create a CSV reader object
@@ -60,13 +80,21 @@ for city in cities:
     cityList.append(cities[city])
 cityList = sorted(cityList, key=lambda x: x.getLatitude())
 
-fig, axs = plt.subplots(len(cityList), 1, figsize=(10, 1000))
+#fig, axs = plt.subplots(len(cityList), 1, figsize=(10, len(cityList) * 3))
+
+rows = (len(cityList) + 2) // 3  # Adjust rows based on number of cities
+fig, axs = plt.subplots(rows, 3, figsize=(15, 5 * rows))  # Adjust figure size based on rows
+axs = axs.flatten()  # Flatten the 2D array of subplots to 1D for easier iteration
+
 for i in range(len(cityList)):
     cityList[i].display(i)
 
 # Display the graph
 #plt.tight_layout()
 plt.suptitle('Does High Latitude Extend Summer Daylight Hours And Decrease Winter Daylight Hours?', fontsize=20)
-plt.subplots_adjust(hspace=1)
+plt.subplots_adjust(hspace=0.6)
+
+plt.savefig('daylight_hours.pdf', bbox_inches='tight')
+
 plt.show()
 print("Test")
